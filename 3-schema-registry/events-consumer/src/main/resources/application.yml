@@ -3,10 +3,11 @@ spring:
   kafka:
     bootstrap-servers: localhost:9092
     consumer:
-      # Use Specific Record or else you get Avro GenericRecord.
-      specific.avro.reader: true
-      auto.offset.reset: earliest
-      key.serializer: org.apache.kafka.common.serialization.StringSerializer
-      value.serializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
-      schema.registry.url: http://localhost:8081
+      key-deserializer: "org.apache.kafka.common.serialization.StringDeserializer"
+      value-deserializer: "io.confluent.kafka.serializers.KafkaAvroDeserializer"
+      auto-offset-reset: "earliest"
+      properties:
+        # Use Specific Record or else you get Avro GenericRecord.
+        specific.avro.reader: true
+        schema.registry.url: http://localhost:8081
 
