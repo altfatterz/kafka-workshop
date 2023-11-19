@@ -35,9 +35,20 @@ $ echo '{"productCode":"T800", "price":"800.50"}' | kcat -P -b localhost:<check>
 ```
 
 ```bash
-$ kafka-console-producer --bootstrap-server localhost:<check> --topic product-price-changes --property key.separator=:
-T800:{"productCode":"T800", "price":"800.50"}
+$ kafka-console-producer --bootstrap-server localhost:<check> --topic product-price-changes \
+--property parse.key=true \
+--property key.separator="|" \
+--property value.serializer=org.springframework.kafka.support.serializer.JsonSerializer
+T800|{"productCode":"T800", "price":"800.50"}
 ```
+
+```bash
+$ kafka-console-consumer --bootstrap-server localhost:<check> --topic product-price-changes \
+--property value.deserializer=org.apache.kafka.connect.json.JsonDeserializer --from-beginning
+T800|{"productCode":"T800", "price":"800.50"}
+```
+
+
 
 Verify that the database is updated:
 
