@@ -20,7 +20,9 @@ public class TestProductServiceApplication {
     @Bean
     @ServiceConnection
     PostgreSQLContainer<?> postgresContainer() {
-        return new PostgreSQLContainer<>(DockerImageName.parse("postgres:16-alpine"));
+        return new PostgreSQLContainer<>(
+                DockerImageName.parse("postgres:16-alpine"))
+                .withDatabaseName("test").withUsername("postgres").withPassword("secret");
     }
 
     public static void main(String[] args) {

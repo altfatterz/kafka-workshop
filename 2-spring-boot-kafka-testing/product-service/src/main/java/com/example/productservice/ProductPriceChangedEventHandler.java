@@ -22,7 +22,7 @@ class ProductPriceChangedEventHandler {
 
     @KafkaListener(topics = "product-price-changes", groupId = "demo")
     public void handle(ProductPriceChangedEvent event) {
-        log.info("Received a ProductPriceChangedEvent with productCode:{}: ", event.productCode());
+        log.info("Received a ProductPriceChangedEvent with productCode: {}", event.productCode());
         productRepository.updateProductPrice(event.productCode(), event.price());
     }
 }
