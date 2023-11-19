@@ -31,10 +31,6 @@ product-price-changes
 Create a product price change event
 
 ```bash
-$ echo '{"productCode":"T800", "price":"800.50"}' | kcat -P -b localhost:<check> -t product-price-changes 
-```
-
-```bash
 $ kafka-console-producer --bootstrap-server localhost:<check> --topic product-price-changes \
 --property parse.key=true \
 --property key.separator="|" \
@@ -47,7 +43,6 @@ $ kafka-console-consumer --bootstrap-server localhost:<check> --topic product-pr
 --property value.deserializer=org.apache.kafka.connect.json.JsonDeserializer --from-beginning
 T800|{"productCode":"T800", "price":"800.50"}
 ```
-
 
 
 Verify that the database is updated:
