@@ -16,7 +16,6 @@ spec:
       containers:
         - image: kubernetes-demo:0.0.1-SNAPSHOT
           name: kubernetes-demo
-          resources: { }
 ---
 apiVersion: v1
 kind: Service
@@ -37,4 +36,5 @@ kind: ConfigMap
 metadata:
   name: kubernetes-demo
 data:
-  hello.greeting: "Hello (from Kubernetes ConfigMap)"
+  application-kubernetes.properties: |-
+    hello.greeting="Hello (from Kubernetes ConfigMap)"

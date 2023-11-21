@@ -3,6 +3,10 @@ $ k3d cluster create mycluster
 ```
 
 ```bash
+$ kubectl apply -f k8s/privileges.yaml
+```
+
+```bash
 $ mvn spring-boot:build-image
 $ k3d image import kubernetes-demo:0.0.1-SNAPSHOT -c mycluster
 # view images
