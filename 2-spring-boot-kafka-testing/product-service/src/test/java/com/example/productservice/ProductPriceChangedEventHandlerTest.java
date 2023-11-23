@@ -30,7 +30,7 @@ class ProductPriceChangedEventHandlerTest {
     @ServiceConnection
     // @ServiceConnection discovers the type of container that is annotated and creates a ConnectionDetails bean for it.
     static final KafkaContainer kafka =
-            new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.4.3"));
+            new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.5.1"));
 
     @Autowired
     private KafkaTemplate<String, Object> kafkaTemplate;

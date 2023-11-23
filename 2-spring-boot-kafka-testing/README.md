@@ -1,3 +1,4 @@
+Start via `TestProductServiceApplication`
 
 ```bash
 $ docker ps 
@@ -15,6 +16,7 @@ Create a product:
 
 ```bash
 $ psql -h localhost -p <check> -d test -U postgres
+$ Password for user postgres: secret
 $ insert into products(code, name, price) values ('T800', 'first cybernetic organism', 10.50);
 ```
 
@@ -31,16 +33,21 @@ product-price-changes
 Create a product price change event
 
 ```bash
-$ kafka-console-producer --bootstrap-server localhost:<check> --topic product-price-changes \
+$ kafka-console-producer --bootstrap-server localhost:check --topic product-price-changes \
 --property parse.key=true \
 --property key.separator="|" \
 --property value.serializer=org.springframework.kafka.support.serializer.JsonSerializer
+```
+
+```bash
 T800|{"productCode":"T800", "price":"800.50"}
 ```
 
 ```bash
 $ kafka-console-consumer --bootstrap-server localhost:<check> --topic product-price-changes \
 --property value.deserializer=org.apache.kafka.connect.json.JsonDeserializer --from-beginning
+
+
 T800|{"productCode":"T800", "price":"800.50"}
 ```
 

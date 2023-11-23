@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
-@Transactional
 class ProductPriceChangedEventHandler {
 
     private static final Logger log = LoggerFactory.getLogger(
@@ -21,6 +20,7 @@ class ProductPriceChangedEventHandler {
     }
 
     @KafkaListener(topics = "product-price-changes", groupId = "demo")
+    @Transactional // otherwise: jakarta.persistence.TransactionRequiredException: Executing an update/delete query
     public void handle(ProductPriceChangedEvent event) {
         log.info("Received a ProductPriceChangedEvent with productCode: {}", event.productCode());
         productRepository.updateProductPrice(event.productCode(), event.price());
