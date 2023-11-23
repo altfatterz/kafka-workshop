@@ -3,7 +3,27 @@
 ```bash
 $ docker-compose up -d
 ```
-2. Start up `simple-producer` and `simple-consumer`
+
+
+```bash
+$ kafka-topics --bootstrap-server localhost:29092 --list | grep my-topic
+$ kafka-topics --bootstrap-server localhost:29092 --describe --topic my-topic-java
+$ kafka-topics --bootstrap-server localhost:29092 --delete --topic my-topic-java
+$ kafka-topics --bootstrap-server localhost:29092 --delete --topic my-topic-dlt
+
+$ kafka-topics --bootstrap-server localhost:29092 --create --topic my-topic-java --partitions 6 --replication-factor 1
+$ kafka-topics --bootstrap-server localhost:29092 --create --topic my-topic-dlt --partitions 1 --replication-factor 1
+```
+
+2. Start up the consumer: `simple-consumer` with 1 then with 2 and then with 3 instances
+3. 
+Check the consumer groups:
+
+```bash
+$ kafka-consumer-groups --bootstrap-server localhost:29092 --list | grep my-group
+$ kafka-consumer-groups --bootstrap-server localhost:29092 --describe --group my-group-java
+$ kafka-consumer-groups --bootstrap-server localhost:29092 --describe --group my-group-dlt
+```
 
 Both Kafka clients interact with a topic which is created by the first client which starts up.
 
@@ -12,94 +32,10 @@ Both Kafka clients interact with a topic which is created by the first client wh
 ```bash
 $ echo "hello" | http post :8080/messages
 $ echo 100 | http post :8080/many-messages
-$ echo 5 | http post:8080/partition
+$ echo 5 | http post :8080/partition
 ```
 
-4. Notify in the logs of `simple-consumer` that the message was received
-
-5. View consumer groups
-
-```bash
-$ kafka-consumer-groups --bootstrap-server localhost:29092 --list
-
-my-group-dlt
-my-group
-```
-
-To delete a `consumer group` use
-
-```bash
-$ kafka-consumer-groups --bootstrap-server localhost:29092 --group <TODO> --delete
-
-Topic: my-topic	TopicId: SYHnPqz8Q_iKKjpqlP9x4A	PartitionCount: 6	ReplicationFactor: 1	Configs:
-	Topic: my-topic	Partition: 0	Leader: 1	Replicas: 1	Isr: 1	Offline:
-	Topic: my-topic	Partition: 1	Leader: 1	Replicas: 1	Isr: 1	Offline:
-	Topic: my-topic	Partition: 2	Leader: 1	Replicas: 1	Isr: 1	Offline:
-	Topic: my-topic	Partition: 3	Leader: 1	Replicas: 1	Isr: 1	Offline:
-	Topic: my-topic	Partition: 4	Leader: 1	Replicas: 1	Isr: 1	Offline:
-	Topic: my-topic	Partition: 5	Leader: 1	Replicas: 1	Isr: 1	Offline: 
-```
-
-View topic:
-
-```bash
-$ kafka-topics --bootstrap-server localhost:29092 --topic my-topic -describe
-```
-
-6. Describe a group
-
-```bash
-$ kafka-consumer-groups --bootstrap-server localhost:29092 --group my-group --describe
-
-GROUP     TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID                                              HOST            CLIENT-ID
-my-group  messages        0          0               0               0               simple-consumer-1-0-68b95cff-c0eb-4086-8612-98c72f84193f /192.168.65.1   simple-consumer-1-0
-my-group  messages        1          0               0               0               simple-consumer-1-0-68b95cff-c0eb-4086-8612-98c72f84193f /192.168.65.1   simple-consumer-1-0
-my-group  messages        2          0               0               0               simple-consumer-1-1-280f5e8b-b385-4f86-92e3-f78d0737a4cc /192.168.65.1   simple-consumer-1-1
-my-group  messages        3          0               0               0               simple-consumer-1-1-280f5e8b-b385-4f86-92e3-f78d0737a4cc /192.168.65.1   simple-consumer-1-1
-my-group  messages        4          0               0               0               simple-consumer-1-2-3926073d-ba38-43e6-bbe2-543ace9cfc81 /192.168.65.1   simple-consumer-1-2
-my-group  messages        5          0               0               0               simple-consumer-1-2-3926073d-ba38-43e6-bbe2-543ace9cfc81 /192.168.65.1   simple-consumer-1-2
-```
-
-```bash
-$ kafka-consumer-groups --bootstrap-server localhost:29092 --group messages-dlt-group --describe
-
-GROUP              TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID                                              HOST            CLIENT-ID
-messages-dlt-group messages.DLT    0          0               0               0               simple-consumer-1-0-9580fa23-fc72-4292-ab76-3289df56818b /192.168.65.1   simple-consumer-1-0
-```
-
-Exposed `MessageListenerContainer`
-
-```bash
-$ http :8081/containers
-
-[
-"dlt-messages-container",
-"messages-container",
-]
-```
-
-Start a new `SimpleConsumerApplication` instance with application arguments:
-
-```bash
---spring.application.name=simple-consumer-2 --server.port=8082
-```
-
-```bash
-$ kafka-consumer-groups --bootstrap-server localhost:29092 --group my-group --describe
-
-GROUP     TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID                                              HOST            CLIENT-ID
-my-group  messages        5          0               0               0               simple-consumer-2-2-f7b366e4-d8f0-470f-86fa-11195d48617a /192.168.65.1   simple-consumer-2-2
-my-group  messages        0          0               0               0               simple-consumer-1-0-68b95cff-c0eb-4086-8612-98c72f84193f /192.168.65.1   simple-consumer-1-0
-my-group  messages        1          0               0               0               simple-consumer-1-1-280f5e8b-b385-4f86-92e3-f78d0737a4cc /192.168.65.1   simple-consumer-1-1
-my-group  messages        3          0               0               0               simple-consumer-2-0-2d5074c6-158a-4d88-a5d6-9c837fbad79f /192.168.65.1   simple-consumer-2-0
-my-group  messages        2          0               0               0               simple-consumer-1-2-3926073d-ba38-43e6-bbe2-543ace9cfc81 /192.168.65.1   simple-consumer-1-2
-my-group  messages        4          0               0               0               simple-consumer-2-1-b847a9f3-9301-4d8c-a82c-2cf230f2ab97 /192.168.65.1   simple-consumer-2-1
-```
-
-`groupId` - identifies the `consumer groups`
-`clientId` - really useful to determine via monitoring system what and where is consuming.
-
-7. Reset offset
+4. Consumer Reset offset
 
 What to do when there is no initial offset in Kafka or if the current offset no longer exists (for example the consumer group was deleted)
 on the server we set it to `earliest` with. (default is `latest`)
@@ -113,16 +49,25 @@ spring:
 
 Reset offset (to-earliest, to-latest, to-offset <Long>) when the group is 'inactive' and only printing out what will be the change (--dry-run)
 
+Assignments can only be reset if the group 'my-group-java' is inactive (meaning the consumer is not running)
+
 ```bash
-$ kafka-consumer-groups --bootstrap-server localhost:29092 --reset-offsets --group my-group --to-earliest --topic messages --dry-run
-$ kafka-consumer-groups --bootstrap-server localhost:29092 --reset-offsets --group my-group --to-earliest --topic messages --execute
-$ kafka-consumer-groups --bootstrap-server localhost:29092 --group my-group --describe
+$ kafka-consumer-groups --bootstrap-server localhost:29092 --reset-offsets --group my-group-java --to-earliest --topic my-topic-java --dry-run
+$ kafka-consumer-groups --bootstrap-server localhost:29092 --reset-offsets --group my-group-java --to-earliest --topic my-topic-java --execute
+$ kafka-consumer-groups --bootstrap-server localhost:29092 --group my-group-java --describe
+```
+
+
+View `__consumer_offsets` topic
+
+```bash
+$ kafka-console-consumer --bootstrap-server localhost:29092 --topic  __consumer_offsets --from-beginning --formatter kafka.coordinator.group.GroupMetadataManager\$OffsetsMessageFormatter
 ```
 
 ### Poison pill
 
 ```bash
-$ echo fail | http :8080/messages
+$ echo "poison-pill" | http :8080/messages
 ````
 
 Producer logs:

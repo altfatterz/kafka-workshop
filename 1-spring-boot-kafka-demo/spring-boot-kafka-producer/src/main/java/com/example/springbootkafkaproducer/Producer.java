@@ -13,6 +13,8 @@ import java.util.concurrent.ExecutionException;
 @Component
 public class Producer {
 
+    public static final String TOPIC = "my-topic-java";
+
     private static final Logger logger = LoggerFactory.getLogger(Producer.class);
 
     private KafkaTemplate<String, String> kafkaTemplate;
@@ -23,7 +25,7 @@ public class Producer {
 
     public void send(String key, String value) {
         CompletableFuture<SendResult<String, String>> future =
-                kafkaTemplate.send(Config.TOPIC, key, value);
+                kafkaTemplate.send(TOPIC, key, value);
 
         future.whenComplete((result, throwable) -> {
             if (result != null) {
@@ -40,7 +42,7 @@ public class Producer {
 
     public void send(Integer partition, String key, String value) throws ExecutionException, InterruptedException {
         SendResult<String, String> result = kafkaTemplate
-                .send(Config.TOPIC, partition, null, "Hello World").get();
+                .send(TOPIC, partition, null, "Hello World").get();
 
         RecordMetadata recordMetadata = result.getRecordMetadata();
 

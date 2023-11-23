@@ -67,12 +67,15 @@ After the services are up and running, create a topic:
 
 ```bash
 $ kubectl apply -f kafka-topic.yaml
+$ kubectl get kt
 ```
 
 ### 6. Create a user
 
 ```bash
 $ kubectl apply -f kafka-user.yaml
+$ kubectl get ku
+```
 
 Check the created secret:
 
@@ -84,7 +87,7 @@ It has a `sasl.jaas.config` and `password` base64 encoded.
 
 ```bash
 $ kubectl get secret my-user -o jsonpath="{.data['sasl\.jaas\.config']}" | base64 -d
-$ kubectl get secret my-user -o jsonpath="{.data.password}" | base64 -d
+$ kubectl get secret my-user -o jsonpath="{.data.password}" | base64 -d > sasl.password
 ```
 
 ### 7. Extract the cluster certificate:
@@ -136,26 +139,34 @@ $ kubectl get secret my-cluster-cluster-ca-cert -o jsonpath='{.data.ca\.crt}' | 
 $ echo "foo\nbar\nbaz" | kcat -P -b bootstrap.127.0.0.1.nip.io:443 \
 -X ssl.ca.location=ca.crt \
 -X security.protocol=SASL_SSL -X sasl.mechanisms=SCRAM-SHA-512 \
--X sasl.username=my-user -X sasl.password=vAWcYeOywmyW0e1fZB93MG45MLItKWkf -P -t my-topic
+-X sasl.username=my-user -X sasl.password=fH9ZR7hEQeni4TS1VDqAZameZv1SAzdH -P -t my-topic
 # consume 
 $ kcat -C -b bootstrap.127.0.0.1.nip.io:443 -t my-topic \
 -X ssl.ca.location=ca.crt \
 -X security.protocol=SASL_SSL -X sasl.mechanisms=SCRAM-SHA-512 \
--X sasl.username=my-user -X sasl.password=vAWcYeOywmyW0e1fZB93MG45MLItKWkf
+-X sasl.username=my-user -X sasl.password=fH9ZR7hEQeni4TS1VDqAZameZv1SAzdH
 ```
 
-### Kafka Consumer Groups
+### Kafka Consumer Groups / Kafka topics
 
 ```bash
-$ kafka-consumer-groups --bootstrap-server bootstrap.127.0.0.1.nip.io:443 --command-config security-config.properties --list
 $ kafka-topics --bootstrap-server bootstrap.127.0.0.1.nip.io:443 --command-config security-config.properties --list
 ```
 
-### Kafka Topics
+```bash
+$ kafka-consumer-groups --bootstrap-server bootstrap.127.0.0.1.nip.io:443 --command-config security-config.properties --list
+$ kafka-consumer-groups --bootstrap-server bootstrap.127.0.0.1.nip.io:443 --command-config security-config.properties \
+--delete --group my-group-java
+$ kafka-consumer-groups --bootstrap-server bootstrap.127.0.0.1.nip.io:443 --command-config security-config.properties \
+--delete --group my-group-dlt
+```
 
 ```bash
-$ kafka-topics --bootstrap-server bootstrap.127.0.0.1.nip.io:443 --command-config security-config.properties --create --topic my-topic --partitions 6 --replication-factor 1
-$ kafka-topics --bootstrap-server bootstrap.127.0.0.1.nip.io:443 --command-config security-config.properties --create --topic my-topic-dlt --partitions 1 --replication-factor 1
+$ kafka-topics --bootstrap-server bootstrap.127.0.0.1.nip.io:443 --command-config security-config.properties --list
+$ kafka-topics --bootstrap-server bootstrap.127.0.0.1.nip.io:443 --command-config security-config.properties --create \
+--topic my-topic-java --partitions 6 --replication-factor 1
+$ kafka-topics --bootstrap-server bootstrap.127.0.0.1.nip.io:443 --command-config security-config.properties --create \
+--topic my-topic-dlt --partitions 1 --replication-factor 1
 ```
 
 ### Cleanup

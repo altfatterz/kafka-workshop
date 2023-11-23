@@ -25,6 +25,9 @@ spec:
           patternType: prefix
         operations:
           - Read
+          - Delete
+          - Write
+          - Describe
         host: "*"
       # Example Producer ACLs for topic my-topic prefix
       - resource:
