@@ -20,6 +20,7 @@
         <module>3-schema-registry/events-consumer</module>
 
         <module>4-transactions-demo/transactional-producer</module>
+        <module>4-transactions-demo/funds-transfer-app</module>
 
         <module>kubernetes-demo</module>
     </modules>
